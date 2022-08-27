@@ -11,19 +11,12 @@ pipeline {
             steps{
                 script{
                     dir('invoice/') {
-                        withSonarQubeEnv(credentialsId: 'sonar-token') {
+                        // withSonarQubeEnv(credentialsId: 'sonar-token') {
                             sh 'chmod +x gradlew'
                             sh './gradlew test integrationTest jacocoTestReport'
-                            sh './gradlew -Pprod clean check jacocoTestReport sonarqube'
-                        }
+                            sh './gradlew -Pprod -Pwar clean bootWar'
                     }
 
-                    timeout(time: 1, unit: 'HOURS') {
-                      def qg = waitForQualityGate()
-                      if (qg.status != 'OK') {
-                           error "Pipeline aborted due to quality gate failure: ${qg.status}"
-                      }
-                    }
                 }
             }
         }
